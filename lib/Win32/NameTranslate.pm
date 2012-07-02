@@ -69,7 +69,8 @@ sub set {
     $self->{_set} = 'set';
     $self->{_trans}->Set( $type, $set );
   }
-  return 1;
+  my $res = Win32::OLE->LastError;
+  return Win32::OLE::HRESULT( $res ) == 0 ? 1 : 0;
 }
 
 sub get {
@@ -96,6 +97,7 @@ q[I translate, therefore I am];
   use strict;
   use warnings;
   use Win32::NameTranslate qw[:all];
+  use Win32::OLE;
 
   # Create a new name translator, using Global Catalog
   my $trans = Win32::NameTranslate->new( ADS_NAME_INITTYPE_GC );
@@ -103,7 +105,7 @@ q[I translate, therefore I am];
   my $canonical = 'localdomain.local/_SomeOU/_AnotherOU/Tommy Tester';
 
   # Specify Canonical format and name to lookup
-  $trans->set( ADS_NAME_TYPE_CANONICAL, $canonical );
+  $trans->set( ADS_NAME_TYPE_CANONICAL, $canonical ) || die Win32::OLE->LastError;
 
   # Lets get the RFC 1779 'LDAP' type name
   my $rfc = $trans->get( ADS_NAME_TYPE_1779 );
@@ -116,7 +118,7 @@ q[I translate, therefore I am];
   );
 
   # We can lookup multiple names by providing an arrayref
-  $trans->set( ADS_NAME_TYPE_CANONICAL, \@multiple );
+  $trans->set( ADS_NAME_TYPE_CANONICAL, \@multiple ) || die Win32::OLE->LastError;
 
   my @rfcs = $trans->get( ADS_NAME_TYPE_1779 );
 
@@ -272,6 +274,8 @@ Examples:
 
   # translate a number of names from Canonical name format
   $trans->set( ADS_NAME_TYPE_CANONICAL, [ "Fabrikam.com/Users/Jeff Smith", "Fabrikam.com/Users/Johnny Rotten", "Fabrikam.com/Users/Billy Bookcase" ] );
+
+The method will return a C<true> value on success or C<false> on failure. You may check C<< Win32::OLE->LastError >> to see what the error was.
 
 =item C<get>
 
