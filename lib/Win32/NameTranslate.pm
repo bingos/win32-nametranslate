@@ -204,7 +204,7 @@ User principal name format. For example, "JeffSmith@Fabrikam.com".
 
 Extended canonical name format. For example, "Fabrikam.com/Users Jeff Smith".
 
-C<ADS_NAME_TYPE_SERVICE_PRINCIPAL_NAME>
+=item C<ADS_NAME_TYPE_SERVICE_PRINCIPAL_NAME>
 
 Service principal name format. For example, "www/www.fabrikam.com@fabrikam.com".
 
